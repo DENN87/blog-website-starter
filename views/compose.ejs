@@ -1,0 +1,18 @@
+<%- include('partials/header'); %>
+     <h1>Compose</h1>
+     <form action="/compose" method="post" class="item">
+          <div class="m-top">
+               <div class="">
+                    <label for="exampleFormControlInput1" class="form-label">Title</label>
+                    <input type="text" name="compTitle" class="form-control" autocomplete="off"
+                         id="exampleFormControlInput1" placeholder="name@example.com">
+               </div>
+               <div class="m-top">
+                    <label for="exampleFormControlTextarea1" class="form-label">Post</label>
+                    <textarea name="compBody" class="form-control" id="exampleFormControlTextarea1" rows="5"></textarea>
+               </div>
+               <button type="submit" name="button" class="btn btn-primary m-top">Publish</button>
+          </div>
+     </form>
+
+     <%- include('partials/footer'); %>
