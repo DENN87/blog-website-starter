@@ -6,11 +6,14 @@
      </p>
      <% for( let i=0; i < newPosts.length; i++ ) { %>
           <article class="blog-post">
-               <a id="homePostTitle" name="blogPostTitle" href="/post/<%= newPosts[i].title %>">
+               <h2 id="homePostTitle" name="blogPostTitle">
                     <%= newPosts[i].title %>
-               </a>
+               </h2>
                <p name=" blogPostBody">
                     <%= newPosts[i].content.substring(0,100) + " ..." %>
+                         <a href="/posts/<%= newPosts[i]._id %>">
+                              Read more
+                         </a>
                </p>
 
           </article>

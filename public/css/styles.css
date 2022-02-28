@@ -14,7 +14,7 @@ html body {
 .navbar {
 	padding-top: 15px;
 	padding-bottom: 15px;
-	border: 0;
+	border-bottom: 1px solid grey;
 	border-radius: 0;
 	margin-bottom: 0;
 	font-size: 2rem;
@@ -37,7 +37,6 @@ li a:hover {
 #homePostTitle {
 	font-size: x-large;
 	font-family: sans-serif;
-	font-style: italic;
 	color: #4a6ba8;
 }
 

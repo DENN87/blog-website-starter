@@ -1,8 +1,7 @@
-//jshint esversion:6
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
+const mongoose = require("mongoose");
 
 const homeStartingContent =
 	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Platea dictumst quisque sagittis purus sit amet volutpat consequat. Blandit libero volutpat sed cras. Congue eu consequat ac felis donec et odio pellentesque. Malesuada fames ac turpis egestas. Vitae justo eget magna fermentum. Urna porttitor rhoncus dolor purus. Eget mauris pharetra et ultrices neque ornare aenean euismod. Elementum nisi quis eleifend quam adipiscing vitae. Sed augue lacus viverra vitae congue eu consequat ac. At auctor urna nunc id cursus metus. Eget gravida cum sociis natoque penatibus et magnis dis. Venenatis cras sed felis eget velit. In metus vulputate eu scelerisque felis. Ut diam quam nulla porttitor massa id. Aliquet eget sit amet tellus cras. Id aliquet risus feugiat in ante metus dictum at tempor. Tincidunt ornare massa eget egestas.";
@@ -18,14 +17,22 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-let posts = [];
+const URL = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@clustermongodb-weolp.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+
+mongoose.connect(URL, {
+	useNewUrlParser: true,
+});
+
+const postSchema = { title: String, content: String };
+const Post = mongoose.model("Post", postSchema);
 
 app.get("/", (req, res) => {
-	res.render("home", {
-		startingContent: homeStartingContent,
-		newPosts: posts,
+	Post.find({}, (err, foundPosts) => {
+		res.render("home", {
+			startingContent: homeStartingContent,
+			newPosts: foundPosts,
+		});
 	});
-	// rendering home.ejs file to home "/" and passing data to ejs file
 });
 
 app.get("/about", (req, res) => {
@@ -43,25 +50,30 @@ app.get("/compose", (req, res) => {
 });
 
 app.post("/compose", (req, res) => {
-	const newPost = {
+	// creating post conform mongoose schema
+	const post = new Post({
 		title: req.body.compTitle,
 		content: req.body.compBody,
-	};
-	posts.push(newPost);
-	res.redirect("/");
-});
-
-app.get("/post/:title", (req, res) => {
-	let bodyPost;
-	// looking for the title inside the posts array to get the content to pass it on to post.ejs
-	posts.forEach((post) => {
-		if (post.title === req.params.title) {
-			bodyPost = post.content;
+	});
+	// saving posts to DB
+	post.save((err) => {
+		if (!err) {
+			res.redirect("/");
 		}
 	});
-	res.render("post", { blogTitle: req.params.title, blogBody: bodyPost });
+});
+
+app.get("/posts/:postId", (req, res) => {
+	const requestedPostId = req.params.postId;
+	Post.findOne({ _id: requestedPostId }, (err, foundPost) => {
+		// res.json(foundPost);
+		res.render("post", {
+			blogTitle: foundPost.title,
+			blogBody: foundPost.content,
+		});
+	});
 });
 
 app.listen(3000, function () {
-	console.log("Server started on port 3000");
+	console.log("Server started on port 3000.");
 });
